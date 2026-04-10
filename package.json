@@ -1,0 +1,27 @@
+{
+  "name": "blended-browser",
+  "version": "1.0.0",
+  "description": "Privacy-First Browser with Local Falcon AI",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win --x64 --publish never"
+  },
+  "build": {
+    "appId": "com.blended.browser",
+    "win": {
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "dependencies": {
+    "@xenova/transformers": "^2.16.0"
+  },
+  "devDependencies": {
+    "electron": "^28.2.0",
+    "electron-builder": "^24.9.1"
+  }
+}
