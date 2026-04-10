@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Blended Browser</title>
+    <style>
+        body { margin: 0; display: flex; height: 100vh; font-family: 'Segoe UI', sans-serif; background: #000; color: #fff; overflow: hidden; }
+        #browser-container { flex: 3; background: #fff; position: relative; }
+        webview { width: 100%; height: 100%; border: none; }
+        #ai-sidebar { flex: 1; background: #111; display: flex; flex-direction: column; border-left: 1px solid #333; }
+        #chat-window { flex: 1; overflow-y: auto; padding: 15px; font-size: 14px; line-height: 1.5; color: #ddd; }
+        #input-area { padding: 15px; background: #1a1a1a; border-top: 1px solid #333; }
+        input { width: 90%; padding: 10px; background: #222; border: 1px solid #444; color: #fff; border-radius: 4px; outline: none; }
+        .user-msg { color: #4facfe; margin-top: 10px; font-weight: bold; }
+        .ai-msg { color: #00f2fe; margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <div id="browser-container">
+        <webview id="wv" src="https://duckduckgo.com"></webview>
+    </div>
+    
+    <div id="ai-sidebar">
+        <div style="padding: 15px; border-bottom: 1px solid #333; font-weight: bold;">Blended Local AI (Falcon)</div>
+        <div id="chat-window">Ready for offline commands...</div>
+        <div id="input-area">
+            <input type="text" id="ai-input" placeholder="Ask AI anything...">
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+        const aiInput = document.getElementById('ai-input');
+        const chatWindow = document.getElementById('chat-window');
+
+        aiInput.addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter' && aiInput.value.trim() !== '') {
+                const query = aiInput.value;
+                chatWindow.innerHTML += `<div class="user-msg">You: ${query}</div>`;
+                aiInput.value = 'Processing...';
+                aiInput.disabled = true;
+
+                const response = await ipcRenderer.invoke('ask-ai', query);
+                
+                chatWindow.innerHTML += `<div class="ai-msg">Falcon: ${response}</div>`;
+                aiInput.value = '';
+                aiInput.disabled = false;
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+            }
+        });
+    </script>
+</body>
+</html>
